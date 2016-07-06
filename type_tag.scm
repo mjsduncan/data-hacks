@@ -1,6 +1,9 @@
 #!/usr/local/bin/guile \
 -e main -s
 !#
+;;
+;; this was adapted from /opencog/opencog/nlp/scm/ processing-utils.scm
+;;
 ; generate utterance type tags for file of sentences
 ; Prior to running this, the RelEx parse server needs to be set up,
 ; so that the `nlp-parse` call succeeds.
@@ -29,6 +32,10 @@
 (use-modules (opencog nlp relex2logic))
 
 (load-r2l-rulebase)
+
+; given a file x.txt, generate x.type with "declarative", "interrogative", or "imparative" on corresponding line
+;(cog-name (car (sentence-get-utterance-type (car (nlp-parse "get the ball")))))
+; $7 = "ImperativeSpeechAct"
 
 ; get sentence type from nlp-parse
 (define (nlp-parse-type string)
@@ -69,16 +76,20 @@
   )
 ; -----------------------------------------------------------------------
 
-; given a file x.txt, generate x.type with "declarative", "interrogative", or "imparative" on corresponding line
-;(cog-name (car (sentence-get-utterance-type (car (nlp-parse "get the ball")))))
-; $7 = "ImperativeSpeechAct"
-
-; from directories futurist, generic, sophia
+;; from directories of aiml files futurist, generic, sophia,
+;; plain text files of utterances (one per line) were generated
 ; get list of .txt files
 (use-modules (ice-9 ftw))
 (define futurist (cddr (scandir "/home/biocog/R/aiml/data/futurist/text")))
-;(define futurist-types (map nlp-parse-type-from-file futurist))
 
+; generate list of utterance types for each text file
+(define futurist-types (map nlp-parse-type-from-file futurist))
+
+;; this produces a list of the appropriate length but elements are malformed:
+;; (#<unspecified> #<unspecified> #<unspecified> ...)
+;; and i couldn't access their content.  the relex parser output shows they are being parsed...
+
+; repeat for each directory
 (define generic (scandir "/home/biocog/R/aiml/data/generic/text"))
 (define sophia (scandir "/home/biocog/R/aiml/data/sophia/text"))
 
